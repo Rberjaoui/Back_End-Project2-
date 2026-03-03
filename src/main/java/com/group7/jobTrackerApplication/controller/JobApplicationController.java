@@ -1,7 +1,7 @@
 package com.group7.jobTrackerApplication.controller;
 
-import com.group7.jobTrackerApplication.model.jobApplication;
-import com.group7.jobTrackerApplication.service.jobApplicationService;
+import com.group7.jobTrackerApplication.model.JobApplication;
+import com.group7.jobTrackerApplication.service.JobApplicationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
