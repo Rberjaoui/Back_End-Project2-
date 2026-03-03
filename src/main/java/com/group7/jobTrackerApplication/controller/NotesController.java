@@ -1,7 +1,7 @@
 package com.group7.jobTrackerApplication.controller;
 
-import com.group7.jobTrackerApplication.model.applicationNote;
-import com.group7.jobTrackerApplication.service.applicationNotesService;
+import com.group7.jobTrackerApplication.model.ApplicationNote;
+import com.group7.jobTrackerApplication.service.ApplicationNotesService;
 import com.group7.jobTrackerApplication.DTO.UpdateApplicationNoteRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -10,11 +10,11 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/application-notes")
-public class ApplicationNotesController {
+public class ApplicationNoteController {
 
     private final ApplicationNotesService applicationNotesService;
 
-    public applicationNotesController( ApplicationNotesService applicationNotesService){
+    public ApplicationNoteController(ApplicationNotesService applicationNotesService){
         this.applicationNotesService = applicationNotesService;
     }
 
