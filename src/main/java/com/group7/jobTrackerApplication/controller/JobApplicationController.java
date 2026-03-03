@@ -30,19 +30,19 @@ public class jobApplicationController {
 
     @PostMapping
     public ResponseEntity<jobApplication> create(@RequestBody jobApplication jobApplication){
-        jobApplication created = jobApplicationService.create(jobApplication);
+        JobApplication created = jobApplicationService.create(jobApplication);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @PutMapping("/{applicationId}")
     public ResponseEntity<jobApplication> replace(@PathVariable Long applicationId, @RequestBody jobApplication jobApplication ){
-        jobApplication updated = jobApplicationService.replace(applicationId, jobApplication);
+        JobApplication updated = jobApplicationService.replace(applicationId, jobApplication);
         return ResponseEntity.ok(updated);
     }
 
     @PatchMapping("/{applicationId}")
     public ResponseEntity<jobApplication> patch(@PathVariable Long applicationId, @RequestBody Map<String, Object> updates){
-        jobApplication patched = jobApplicationService.replace(applicationId, updates);
+        JobApplication patched = jobApplicationService.replace(applicationId, updates);
         return ResponseEntity.ok(patched);
     }
 
