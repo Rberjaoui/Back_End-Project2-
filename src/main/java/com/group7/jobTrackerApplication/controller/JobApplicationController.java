@@ -29,13 +29,13 @@ public class jobApplicationController {
     }
 
     @PostMapping
-    public ResponseEntity<JobApplication> create(@RequestBody jobApplication jobApplication){
+    public ResponseEntity<JobApplication> create(@RequestBody JobApplication jobApplication){
         JobApplication created = jobApplicationService.create(jobApplication);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @PutMapping("/{applicationId}")
-    public ResponseEntity<JobApplication> replace(@PathVariable Long applicationId, @RequestBody jobApplication jobApplication ){
+    public ResponseEntity<JobApplication> replace(@PathVariable Long applicationId, @RequestBody JobApplication jobApplication ){
         JobApplication updated = jobApplicationService.replace(applicationId, jobApplication);
         return ResponseEntity.ok(updated);
     }

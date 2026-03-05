@@ -5,6 +5,7 @@ import com.group7.jobTrackerApplication.repository.JobApplicationRepository;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
+import java.time.LocalDate;
 
 @Service
 public class JobApplicationService {
@@ -31,6 +32,19 @@ public class JobApplicationService {
     public JobApplication replace(Long applicationId, JobApplication jobApplication) {
         jobApplication.setApplicationId(applicationId);
         return jobApplicationRepository.save(jobApplication);
+    }
+
+    public JobApplication replace(Long applicationId, Map<String, Object> updates) {
+        JobApplication existing = getById(applicationId);
+
+        if (updates.containsKey("status")) {
+            existing.setStatus((String) updates.get("status"));
+        }
+        if (updates.containsKey("dateApplied")) {
+            existing.setDateApplied(LocalDate.parse((String) updates.get("dateApplied")));
+        }
+
+        return jobApplicationRepository.save(existing);
     }
 
     public void delete(Long applicationId) {
