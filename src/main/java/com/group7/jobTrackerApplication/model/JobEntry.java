@@ -23,12 +23,15 @@ public class JobEntry {
     @Column(name = "salary_text")
     private String salaryText;
 
+    @Column(name = "posting_url")
+    private String postingURL;
+
 
     public Long getJobId() { return jobId; }
     public void setJobId(Long jobId) { this.jobId = jobId; }
 
     public Long getUserId() { return userId; }
-    public void setUserId(Long userId) { this.userId = userId; }
+    public void setUserId( Long userId) {this.userId = userId;}
 
     public String getCompanyName() { return companyName; }
     public void setCompanyName(String companyName) { this.companyName = companyName; }
@@ -38,4 +41,7 @@ public class JobEntry {
 
     public String getSalaryText() { return salaryText; }
     public void setSalaryText(String salaryText) { this.salaryText = salaryText; }
+
+    public String getPostingURL() { return postingURL; }
+    public void setPostingURL(String postingURL) { this.postingURL = postingURL; }
 }

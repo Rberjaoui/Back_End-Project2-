@@ -10,11 +10,11 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/job-applications")
-public class jobApplicationController {
+public class JobApplicationController {
 
     private final JobApplicationService jobApplicationService;
 
-    public jobApplicationController( JobApplicationService jobApplicationService){
+    public JobApplicationController( JobApplicationService jobApplicationService){
         this.jobApplicationService = jobApplicationService;
     }
 
@@ -25,7 +25,7 @@ public class jobApplicationController {
 
     @GetMapping("/{applicationId}")
     public ResponseEntity<JobApplication> getById(@PathVariable Long applicationId){
-        return ResponseEntity.ok(jobApplicationService.getById());
+        return ResponseEntity.ok(jobApplicationService.getById(applicationId));
     }
 
     @PostMapping
