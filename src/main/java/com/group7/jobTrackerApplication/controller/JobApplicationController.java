@@ -19,35 +19,35 @@ public class jobApplicationController {
     }
 
     @GetMapping
-    public ReponseEntity<List<jobApplication>> getAll(){
+    public ResponseEntity<List<JobApplication>> getAll(){
         return ResponseEntity.ok(jobApplicationService.getAll());
     }
 
     @GetMapping("/{applicationId}")
-    public ReponseEntity<jobApplication> getById(@PathVariable Long applicationId){
+    public ResponseEntity<JobApplication> getById(@PathVariable Long applicationId){
         return ResponseEntity.ok(jobApplicationService.getById());
     }
 
     @PostMapping
-    public ResponseEntity<jobApplication> create(@RequestBody jobApplication jobApplication){
+    public ResponseEntity<JobApplication> create(@RequestBody JobApplication jobApplication){
         JobApplication created = jobApplicationService.create(jobApplication);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @PutMapping("/{applicationId}")
-    public ResponseEntity<jobApplication> replace(@PathVariable Long applicationId, @RequestBody jobApplication jobApplication ){
+    public ResponseEntity<JobApplication> replace(@PathVariable Long applicationId, @RequestBody JobApplication jobApplication ){
         JobApplication updated = jobApplicationService.replace(applicationId, jobApplication);
         return ResponseEntity.ok(updated);
     }
 
     @PatchMapping("/{applicationId}")
-    public ResponseEntity<jobApplication> patch(@PathVariable Long applicationId, @RequestBody Map<String, Object> updates){
+    public ResponseEntity<JobApplication> patch(@PathVariable Long applicationId, @RequestBody Map<String, Object> updates){
         JobApplication patched = jobApplicationService.replace(applicationId, updates);
         return ResponseEntity.ok(patched);
     }
 
     @DeleteMapping("/{applicationId}")
-    public ResponseEntity<jobApplication> delete(@PathVariable Long applicationId){
+    public ResponseEntity<JobApplication> delete(@PathVariable Long applicationId){
         jobApplicationService.delete(applicationId);
         return ResponseEntity.noContent().build();
     }

@@ -6,6 +6,7 @@ import com.group7.jobTrackerApplication.DTO.UpdateUserRoleRequest;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
+import java.util.List;
 
 @RestController
 @RequestMapping("/admin")
@@ -18,7 +19,7 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<User> getAllUsers(){
+    public ResponseEntity<List<User>> getAllUsers(){
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
@@ -34,8 +35,8 @@ public class UserController {
     }
 
     @DeleteMapping("/{userId}")
-    public ResponseEntity<User> deleteUser(@PathVariable Long userId){
-        User deleted = userService.delete(userId);
+    public ResponseEntity<Void> deleteUser(@PathVariable Long userId){
+        userService.delete(userId);
         return ResponseEntity.noContent().build();
     }
 }

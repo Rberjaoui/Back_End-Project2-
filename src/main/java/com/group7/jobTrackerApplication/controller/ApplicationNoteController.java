@@ -19,24 +19,24 @@ public class ApplicationNoteController {
     }
 
     @GetMapping("/{noteId}")
-    public ResponseEntity<applicationNotes> getNoteById(@PathVariable Long noteId){
+    public ResponseEntity<ApplicationNote> getNoteById(@PathVariable Long noteId){
         return ResponseEntity.ok(applicationNotesService.getNoteById(noteId));
     }
 
     @PostMapping
-    public ResponseEntity<applicationNotes> create(@RequestBody applicationNotes applicationNotes){
+    public ResponseEntity<ApplicationNote> create(@RequestBody ApplicationNote applicationNotes){
         ApplicationNote created = applicationNotesService.create(applicationNotes);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @PatchMapping("/{noteId}")
-    ResponseEntity<applicationNotes> patch(@PathVariable Long noteId, @Valid @RequestBody UpdateApplicationNoteRequest request){
+    ResponseEntity<ApplicationNote> patch(@PathVariable Long noteId, @Valid @RequestBody UpdateApplicationNoteRequest request){
         ApplicationNote updated = applicationNotesService.patch(noteId, request.getContent());
         return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{noteId}")
-    ResponseEntity<applicationNotes> delete(@PathVariable Long noteId){
+    ResponseEntity<ApplicationNote> delete(@PathVariable Long noteId){
         ApplicationNote deleted = applicationNotesService.delete(noteId);
         return ResponseEntity.noContent().build();
     }

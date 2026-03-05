@@ -19,12 +19,12 @@ public class JobEntryController {
     }
 
     @GetMapping
-    public ReponseEntity<List<JobEntry>> getAll(){
+    public ResponseEntity<List<JobEntry>> getAll(){
         return ResponseEntity.ok(jobEntryService.getAll());
     }
 
     @GetMapping("/{jobId}")
-    public ReponseEntity<JobEntry> getById(@PathVariable Long jobId){
+    public ResponseEntity<JobEntry> getById(@PathVariable Long jobId){
         return ResponseEntity.ok(jobEntryService.getById());
     }
 
@@ -41,13 +41,13 @@ public class JobEntryController {
     }
 
     @PatchMapping("/{jobId}")
-    public ResponseEntity<jobEntry> patch(@PathVariable Long jobId, @RequestBody Map<String, Object> updates){
+    public ResponseEntity<JobEntry> patch(@PathVariable Long jobId, @RequestBody Map<String, Object> updates){
         JobEntry patched = jobEntryService.replace(jobId, updates);
         return ResponseEntity.ok(patched);
     }
 
     @DeleteMapping("/{jobId}")
-    public ResponseEntity<jobEntry> delete(@PathVariable Long jobId){
+    public ResponseEntity<JobEntry> delete(@PathVariable Long jobId){
         jobEntryService.delete(jobId);
         return ResponseEntity.noContent().build();
     }

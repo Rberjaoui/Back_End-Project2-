@@ -1,7 +1,6 @@
-package com.group7.jobTrackerApplication;
+package com.group7.jobTrackerApplication.model;
 
 import jakarta.persistence.*;
-import java.time.LocalDate;
 
 @Entity
 @Table(name = "job_entries")
