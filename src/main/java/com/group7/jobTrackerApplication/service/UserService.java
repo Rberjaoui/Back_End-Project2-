@@ -1,6 +1,7 @@
 package com.group7.jobTrackerApplication.service;
 
 import com.group7.jobTrackerApplication.model.User;
+import com.group7.jobTrackerApplication.model.Role;
 import com.group7.jobTrackerApplication.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -23,7 +24,7 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
-    public User update(Long userId, String newRole) {
+    public User update(Long userId, Role newRole) {
         User user = getUserById(userId);
         user.setRole(newRole);
         return userRepository.save(user);

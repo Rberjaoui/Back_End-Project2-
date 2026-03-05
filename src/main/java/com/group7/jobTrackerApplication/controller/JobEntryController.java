@@ -1,5 +1,6 @@
 package com.group7.jobTrackerApplication.controller;
 
+import com.group7.jobTrackerApplication.DTO.UpdateJobEntryRequest;
 import com.group7.jobTrackerApplication.model.JobEntry;
 import com.group7.jobTrackerApplication.service.JobEntryService;
 import org.springframework.http.HttpStatus;
@@ -41,8 +42,8 @@ public class JobEntryController {
     }
 
     @PatchMapping("/{jobId}")
-    public ResponseEntity<JobEntry> patch(@PathVariable Long jobId, @RequestBody Map<String, Object> updates){
-        JobEntry patched = jobEntryService.replace(jobId, updates);
+    public ResponseEntity<JobEntry> patch(@PathVariable Long jobId, @RequestBody UpdateJobEntryRequest updates){
+        JobEntry patched = jobEntryService.patch(jobId, updates);
         return ResponseEntity.ok(patched);
     }
 

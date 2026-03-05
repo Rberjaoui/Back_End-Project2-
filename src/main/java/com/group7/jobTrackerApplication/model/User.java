@@ -1,6 +1,7 @@
 package com.group7.jobTrackerApplication.model;
 
 import jakarta.persistence.*;
+import com.group7.jobTrackerApplication.model.Role;
 
 @Entity
 @Table(name = "users")
@@ -17,8 +18,9 @@ public class User {
     @Column(name = "email")
     private String email;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "role")
-    private String role;
+    private Role role;
 
     @Column(name = "oauth_provider")
     private String oauthProvider;
@@ -35,8 +37,8 @@ public class User {
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
 
-    public String getRole() { return role; }
-    public void setRole(String role) { this.role = role; }
+    public Role getRole() { return role; }
+    public void setRole(Role role) { this.role = role; }
 
     public String getOauthProvider() { return oauthProvider; }
     public void setOauthProvider(String oauthProvider) { this.oauthProvider = oauthProvider; }
