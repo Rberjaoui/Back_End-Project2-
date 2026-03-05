@@ -31,7 +31,7 @@ public class JobEntry {
     public void setJobId(Long jobId) { this.jobId = jobId; }
 
     public Long getUserId() { return userId; }
-    public void setUserId(Long userId) { this.userId = userId; }
+    public void setUserId( Long userId) {this.userId = userId;}
 
     public String getCompanyName() { return companyName; }
     public void setCompanyName(String companyName) { this.companyName = companyName; }
