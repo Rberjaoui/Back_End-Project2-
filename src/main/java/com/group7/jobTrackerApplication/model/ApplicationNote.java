@@ -21,7 +21,7 @@ public class ApplicationNote {
     @Column(name = "last_edited")
     private LocalDateTime lastEdited;
 
-    // Getters and Setters
+
     public Long getNotesId() { return notesId; }
     public void setNotesId(Long notesId) { this.notesId = notesId; }
 

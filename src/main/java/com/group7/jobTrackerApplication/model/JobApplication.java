@@ -24,7 +24,7 @@ public class JobApplication {
     @Column(name = "date_applied")
     private LocalDate dateApplied;
 
-    // Getters and Setters
+
     public Long getApplicationId() { return applicationId; }
     public void setApplicationId(Long applicationId) { this.applicationId = applicationId; }
 
