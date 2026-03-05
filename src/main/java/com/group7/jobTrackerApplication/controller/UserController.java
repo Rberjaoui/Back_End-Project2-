@@ -19,7 +19,7 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<User> getAllUsers(){
-        return ResponseEntity.ok(userService.getAllUsers());
+        return ResponseEntity.ok((User) userService.getAllUsers()); //temporary fix
     }
 
     @GetMapping("/{userId}")
