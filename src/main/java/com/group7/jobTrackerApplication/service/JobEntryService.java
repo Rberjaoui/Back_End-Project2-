@@ -33,6 +33,22 @@ public class JobEntryService {
         return jobEntryRepository.save(jobEntry);
     }
 
+    public JobEntry replace(Long jobId, Map<String, Object> updates) {
+        JobEntry existing = getById(jobId);
+
+        if (updates.containsKey("jobTitle")) {
+            existing.setJobTitle((String) updates.get("jobTitle"));
+        }
+        if (updates.containsKey("companyName")) {
+            existing.setCompanyName((String) updates.get("companyName"));
+        }
+        if (updates.containsKey("salaryText")) {
+            existing.setSalaryText((String) updates.get("salaryText"));
+        }
+
+        return jobEntryRepository.save(existing);
+    }
+
     public void delete(Long jobId) {
         jobEntryRepository.deleteById(jobId);
     }

@@ -25,7 +25,7 @@ public class jobApplicationController {
 
     @GetMapping("/{applicationId}")
     public ResponseEntity<JobApplication> getById(@PathVariable Long applicationId){
-        return ResponseEntity.ok(jobApplicationService.getById());
+        return ResponseEntity.ok(jobApplicationService.getById(applicationId));
     }
 
     @PostMapping
