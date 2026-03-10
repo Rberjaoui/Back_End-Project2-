@@ -23,12 +23,13 @@ public class JobEntryService {
         this.userService = userService;
     }
 
-    public List<JobEntry> getAll() {
-        return jobEntryRepository.findAll();
+    public List<JobEntry> getAll( User user ) {
+        return jobEntryRepository.findByUserId(user.getUserId());
     }
 
-    public JobEntry getById(Long jobId) {
-        return jobEntryRepository.findById(jobId)
+    public JobEntry getById(Long jobId, User user) {
+        return jobEntryRepository
+                .findByJobIdAndUserId(jobId, user.getUserId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Job entry not found"));
     }
 
@@ -45,24 +46,35 @@ public class JobEntryService {
         return jobEntryRepository.save(je);
     }
 
-    public JobEntry replace(Long jobId, JobEntry jobEntry) {
-        jobEntry.setJobId(jobId);
-        return jobEntryRepository.save(jobEntry);
+    public JobEntry replace(Long jobId, JobEntry changeTo, User user) {
+        JobEntry toChange = jobEntryRepository
+                        .findByJobIdAndUserId(jobId, user.getUserId())
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Job entry not found"));
+
+        toChange.setCompanyName(changeTo.getCompanyName());
+        toChange.setJobTitle(changeTo.getJobTitle());
+        toChange.setPostingURL(changeTo.getPostingURL());
+        toChange.setSalaryText(changeTo.getSalaryText());
+
+        return jobEntryRepository.save(toChange);
     }
 
-    public JobEntry patch(Long jobId, UpdateJobEntryRequest updates) {
-        JobEntry existing = jobEntryRepository.findById(jobId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    public JobEntry patch(Long jobId, UpdateJobEntryRequest updates, User user) {
+        JobEntry toChange = jobEntryRepository.findByJobIdAndUserId(jobId, user.getUserId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Job entry not found"));
 
-        if (updates.getCompany() != null) existing.setCompanyName(updates.getCompany());
-        if (updates.getJobName() != null) existing.setJobTitle(updates.getJobName());
-        if (updates.getSalary() != null) existing.setSalaryText(updates.getSalary());
-        if (updates.getPostingUrl() != null) existing.setPostingURL(updates.getPostingUrl());
+        if (updates.getCompany() != null) toChange.setCompanyName(updates.getCompany());
+        if (updates.getJobName() != null) toChange.setJobTitle(updates.getJobName());
+        if (updates.getSalary() != null) toChange.setSalaryText(updates.getSalary());
+        if (updates.getPostingUrl() != null) toChange.setPostingURL(updates.getPostingUrl());
 
-        return jobEntryRepository.save(existing);
+        return jobEntryRepository.save(toChange);
     }
 
-    public void delete(Long jobId) {
-        jobEntryRepository.deleteById(jobId);
+    public void delete(Long jobId, User user) {
+        JobEntry toDelete = jobEntryRepository.findByJobIdAndUserId(jobId, user.getUserId())
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Job entry not found"));
+
+        jobEntryRepository.deleteById(toDelete.getJobId());
     }
 }

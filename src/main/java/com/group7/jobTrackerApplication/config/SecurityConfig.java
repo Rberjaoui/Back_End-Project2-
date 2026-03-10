@@ -1,9 +1,11 @@
 package com.group7.jobTrackerApplication.config;
 
+import com.group7.jobTrackerApplication.service.CustomOAuth2UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 
 import static org.springframework.security.config.Customizer.withDefaults;
@@ -21,13 +23,16 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class SecurityConfig {
 
     @Bean
-    SecurityFilterChain springFilterChain(HttpSecurity http) throws Exception {
+    SecurityFilterChain springFilterChain(HttpSecurity http, CustomOAuth2UserService customOAuth2UserService) throws Exception {
         return http
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests( auth -> {
                     auth.requestMatchers("/").permitAll();
+                    auth.requestMatchers("/admin/**").hasRole("ADMIN");
                     auth.anyRequest().authenticated();
                 })
-                .oauth2Login(withDefaults())
+                .oauth2Login(oauth -> oauth
+                        .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService)))
                 .formLogin(withDefaults())
                 .build();
     }
