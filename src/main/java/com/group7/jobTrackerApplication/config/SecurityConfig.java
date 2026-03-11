@@ -1,34 +1,70 @@
 package com.group7.jobTrackerApplication.config;
 
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
-
-import static org.springframework.security.config.Customizer.withDefaults;
-
-/**
- * [Brief one-sentence description of what this class does.
- *
- * @author Drew "Dr.C" Clinkenbeard
- * @oversion 0.1.0
- * @since
- */
+import org.springframework.web.cors.CorsConfiguration;
 
 @Configuration
-//@EnableWebSecurity
 public class SecurityConfig {
+
+    // Change if your frontend runs on a different port
+    private static final String FRONTEND_ORIGIN = "http://localhost:3000";
+
+    // Where Spring sends the browser after OAuth login completes
+    private static final String FRONTEND_SUCCESS_URL = "http://localhost:3000/oauth-success";
 
     @Bean
     SecurityFilterChain springFilterChain(HttpSecurity http) throws Exception {
-        return http
-                .authorizeHttpRequests( auth -> {
-                    auth.requestMatchers("/").permitAll();
-                    auth.anyRequest().authenticated();
-                })
-                .oauth2Login(withDefaults())
-                .formLogin(withDefaults())
-                .build();
+        http
+                // Dev-friendly. If you add POST/PUT/DELETE later, handle CSRF properly.
+                .csrf(csrf -> csrf.disable())
+
+                // Required so React can call the API AND include cookies
+                .cors(cors -> cors.configurationSource(request -> {
+                    CorsConfiguration cfg = new CorsConfiguration();
+                    cfg.setAllowedOrigins(List.of(FRONTEND_ORIGIN));
+                    cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+                    cfg.setAllowedHeaders(List.of("*"));
+                    cfg.setAllowCredentials(true);
+                    return cfg;
+                }))
+
+                .authorizeHttpRequests(auth -> auth
+                        // Preflight requests
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+                        // Public endpoints
+                        .requestMatchers("/", "/error").permitAll()
+
+                        // OAuth endpoints must be public
+                        .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
+
+                        // Protect your API
+                        .requestMatchers("/api/**").authenticated()
+
+                        // Everything else (adjust as you like)
+                        .anyRequest().permitAll()
+                )
+
+                // OAuth login (GitHub/Google/etc.)
+                .oauth2Login(oauth -> oauth
+                        .defaultSuccessUrl(FRONTEND_SUCCESS_URL, true)
+                )
+
+                // Disable form login (otherwise APIs may redirect to HTML login)
+                .formLogin(form -> form.disable())
+
+                // API logout endpoint React can call
+                .logout(logout -> logout
+                        .logoutUrl("/api/logout")
+                        .logoutSuccessUrl(FRONTEND_ORIGIN + "/")
+                );
+
+        return http.build();
     }
 }
