@@ -1,6 +1,16 @@
 package com.group7.jobTrackerApplication.service;
 
+import com.group7.jobTrackerApplication.DTO.CreateApplicationNoteRequest;
+import com.group7.jobTrackerApplication.DTO.UpdateApplicationNoteRequest;
 import com.group7.jobTrackerApplication.model.ApplicationNote;
+import com.group7.jobTrackerApplication.model.JobApplication;
+import com.group7.jobTrackerApplication.model.User;
+import com.group7.jobTrackerApplication.repository.ApplicationNoteRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
 import com.group7.jobTrackerApplication.model.User;
 import com.group7.jobTrackerApplication.repository.ApplicationNoteRepository;
 import com.group7.jobTrackerApplication.exception.ResourceNotFoundException;
@@ -19,38 +29,36 @@ public class ApplicationNotesService {
         this.userService = userService;
     }
 
-    public ApplicationNote getNoteById(Long noteId) {
-        return applicationNoteRepository.findById(noteId)
-                .orElseThrow(() -> new ResourceNotFoundException("Note not found with id: " + noteId));
+    public ApplicationNote getNoteById(Long noteId, Long applicationId, User user) {
+        return applicationNoteRepository.findByNotesIdAndApplication_ApplicationIdAndApplication_User_UserId(noteId, applicationId, user.getUserId())
+                .orElseThrow(() -> new RuntimeException("Note not found"));
     }
 
-    public ApplicationNote create(OAuth2User principal, ApplicationNote applicationNote) {
-        User user = userService.getOrCreateFromOAuth(principal);
-        applicationNote.setUserId(user.getUserId());
-        return applicationNoteRepository.save(applicationNote);
+    public ApplicationNote create(CreateApplicationNoteRequest request, User user) {
+
+        ApplicationNote ap = new ApplicationNote();
+        ap.setContent(request.content());
+        ap.setLastEdited(request.lastEdited());
+        ap.setApplicationId(request.jobApplication().getApplicationId());
+
+        return applicationNoteRepository.save(ap);
     }
 
-    public ApplicationNote patch(Long noteId, OAuth2User principal, String newContent) {
-        ApplicationNote note = getNoteById(noteId);
-        User user = userService.getOrCreateFromOAuth(principal);
+    public ApplicationNote patch(Long notesId, UpdateApplicationNoteRequest request, User user) {
 
-        if (!note.getUserId().equals(user.getUserId())) {
-            throw new ForbiddenException("You do not have permission to update this note");
-        }
+        ApplicationNote toChange = applicationNoteRepository.findByNotesIdAndApplication_ApplicationIdAndApplication_User_UserId(notesId, request.application().getApplicationId(), user.getUserId())
+                .orElseThrow(()-> new RuntimeException("Job Application not found"));
 
-        note.setContent(newContent);
-        return applicationNoteRepository.save(note);
+        if(request.lastEdited() != null) toChange.setLastEdited(request.lastEdited());
+        if(request.content() != null) toChange.setContent(request.content());
+
+        return applicationNoteRepository.save(toChange);
     }
 
-    public ApplicationNote delete(Long noteId, OAuth2User principal) {
-        ApplicationNote note = getNoteById(noteId);
-        User user = userService.getOrCreateFromOAuth(principal);
+    public void delete(Long noteId, Long applicationId,  User user) {
+        ApplicationNote toDelete = applicationNoteRepository.findByNotesIdAndApplication_ApplicationIdAndApplication_User_UserId(noteId, applicationId, user.getUserId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Job application not found"));
 
-        if (!note.getUserId().equals(user.getUserId())) {
-            throw new ForbiddenException("You do not have permission to delete this note");
-        }
-
-        applicationNoteRepository.deleteById(noteId);
-        return note;
+        applicationNoteRepository.deleteById(toDelete.getNotesId());
     }
 }

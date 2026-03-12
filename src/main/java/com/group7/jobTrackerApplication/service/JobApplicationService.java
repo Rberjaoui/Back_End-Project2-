@@ -1,12 +1,18 @@
 package com.group7.jobTrackerApplication.service;
 
+import com.group7.jobTrackerApplication.DTO.CreateJobApplicationRequest;
+import com.group7.jobTrackerApplication.DTO.UpdateJobApplicationRequest;
 import com.group7.jobTrackerApplication.model.JobApplication;
 import com.group7.jobTrackerApplication.model.User;
 import com.group7.jobTrackerApplication.repository.JobApplicationRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import com.group7.jobTrackerApplication.exception.ResourceNotFoundException;
 import com.group7.jobTrackerApplication.exception.ForbiddenException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
 import java.util.List;
 import java.util.Map;
 import java.time.LocalDate;
@@ -22,59 +28,53 @@ public class JobApplicationService {
         this.userService = userService;
     }
 
-    public List<JobApplication> getAll() {
-        return jobApplicationRepository.findAll();
+    public List<JobApplication> getAll( User user) {
+        return jobApplicationRepository.findByUserId(user.getUserId())
+                .orElseThrow(() -> new RuntimeException(("Job application not found")));
     }
 
-    public JobApplication getById(Long applicationId) {
-        return jobApplicationRepository.findById(applicationId)
-                .orElseThrow(() -> new ResourceNotFoundException("Job application not found with id: " + applicationId));
+    public JobApplication getById(Long applicationId, User user) {
+        return jobApplicationRepository.findByApplicationIdAndUserId(applicationId, user.getUserId())
+                .orElseThrow(() -> new RuntimeException("Job application not found"));
     }
 
-    public JobApplication create(OAuth2User principal, JobApplication jobApplication) {
-        User user = userService.getOrCreateFromOAuth(principal);
-        jobApplication.setUserId(user.getUserId());
-        return jobApplicationRepository.save(jobApplication);
+    public JobApplication create(CreateJobApplicationRequest jobApplication, User user) {
+
+        JobApplication jp = new JobApplication();
+        jp.setDateApplied(jobApplication.dateApplied());
+        jp.setStatus(jobApplication.status());
+        jp.setUserId(user.getUserId());
+        jp.setJobId(jobApplication.jobId());
+
+        return jobApplicationRepository.save(jp);
     }
 
-    public JobApplication replace(Long applicationId, OAuth2User principal, JobApplication jobApplication) {
-        JobApplication existing = getById(applicationId);
-        User user = userService.getOrCreateFromOAuth(principal);
+    public JobApplication replace(Long applicationId, UpdateJobApplicationRequest jobApplication, User user) {
+        JobApplication toChange = jobApplicationRepository.findByApplicationIdAndUserId(applicationId, user.getUserId())
+                .orElseThrow(()-> new RuntimeException("Job Application not found"));
 
-        if (!existing.getUserId().equals(user.getUserId())) {
-            throw new ForbiddenException("You do not have permission to update this application");
-        }
+        toChange.setDateApplied(jobApplication.dataApplied());
+        toChange.setStatus(jobApplication.status());
+        toChange.setJobId(jobApplication.jobId());
 
-        jobApplication.setApplicationId(applicationId);
-        return jobApplicationRepository.save(jobApplication);
+        return jobApplicationRepository.save(toChange);
     }
 
-    public JobApplication replace(Long applicationId, OAuth2User principal, Map<String, Object> updates) {
-        JobApplication existing = getById(applicationId);
-        User user = userService.getOrCreateFromOAuth(principal);
+    public JobApplication patch(Long applicationId, UpdateJobApplicationRequest request, User user) {
+        JobApplication toChange = jobApplicationRepository.findByApplicationIdAndUserId(applicationId, user.getUserId())
+                .orElseThrow(()-> new RuntimeException("Job Application not found"));
 
-        if (!existing.getUserId().equals(user.getUserId())) {
-            throw new ForbiddenException("You do not have permission to update this application");
-        }
+        if(request.dataApplied() != null) toChange.setDateApplied(request.dataApplied());
+        if(request.status() != null) toChange.setStatus(request.status());
+        if(request.jobId() != null) toChange.setJobId(request.jobId());
 
-        if (updates.containsKey("status")) {
-            existing.setStatus((String) updates.get("status"));
-        }
-        if (updates.containsKey("dateApplied")) {
-            existing.setDateApplied(LocalDate.parse((String) updates.get("dateApplied")));
-        }
-
-        return jobApplicationRepository.save(existing);
+        return jobApplicationRepository.save(toChange);
     }
 
-    public void delete(Long applicationId, OAuth2User principal) {
-        JobApplication existing = getById(applicationId);
-        User user = userService.getOrCreateFromOAuth(principal);
+    public void delete(Long applicationId, User user) {
+        JobApplication toDelete = jobApplicationRepository.findByApplicationIdAndUserId(applicationId, user.getUserId())
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Job application not found"));
 
-        if (!existing.getUserId().equals(user.getUserId())) {
-            throw new ForbiddenException("You do not have permission to delete this application");
-        }
-
-        jobApplicationRepository.deleteById(applicationId);
+        jobApplicationRepository.deleteById(toDelete.getApplicationId());
     }
 }

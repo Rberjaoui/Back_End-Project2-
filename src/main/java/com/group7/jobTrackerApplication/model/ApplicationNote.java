@@ -12,23 +12,22 @@ public class ApplicationNote {
     @Column(name = "notes_id")
     private Long notesId;
 
-    @Column(name = "application_id")
-    private Long applicationId;
-
-    @Column(name = "user_id")
-    private Long userId;
-
     @Column(name = "content")
     private String content;
 
     @Column(name = "last_edited")
     private LocalDateTime lastEdited;
 
+    @OneToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "application_id", nullable = false, unique = true)
+    private JobApplication application;
+
+
     public Long getNotesId() { return notesId; }
     public void setNotesId(Long notesId) { this.notesId = notesId; }
 
-    public Long getApplicationId() { return applicationId; }
-    public void setApplicationId(Long applicationId) { this.applicationId = applicationId; }
+    public Long getApplicationId() { return application.getApplicationId(); }
+    public void setApplicationId(Long applicationId) { this.application.setApplicationId(application.getApplicationId()); }
 
     public Long getUserId() { return userId; }
     public void setUserId(Long userId) { this.userId = userId; }

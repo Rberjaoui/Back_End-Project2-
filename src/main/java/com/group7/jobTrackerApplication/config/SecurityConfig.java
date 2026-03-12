@@ -1,5 +1,6 @@
 package com.group7.jobTrackerApplication.config;
 
+import com.group7.jobTrackerApplication.service.CustomOAuth2UserService;
 import java.util.List;
 
 import org.springframework.context.annotation.Bean;
@@ -19,7 +20,7 @@ public class SecurityConfig {
     private static final String FRONTEND_SUCCESS_URL = "http://localhost:3000/oauth-success";
 
     @Bean
-    SecurityFilterChain springFilterChain(HttpSecurity http) throws Exception {
+    SecurityFilterChain springFilterChain(HttpSecurity http, CustomOAuth2UserService customOAuth2UserService) throws Exception {
         http
                 // Dev-friendly. If you add POST/PUT/DELETE later, handle CSRF properly.
                 .csrf(csrf -> csrf.disable())
@@ -49,11 +50,15 @@ public class SecurityConfig {
 
                         // Everything else (adjust as you like)
                         .anyRequest().permitAll()
+
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .anyRequest().authenticated()
                 )
 
                 // OAuth login (GitHub/Google/etc.)
                 .oauth2Login(oauth -> oauth
                         .defaultSuccessUrl(FRONTEND_SUCCESS_URL, true)
+                        .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
                 )
 
                 // Disable form login (otherwise APIs may redirect to HTML login)

@@ -12,8 +12,9 @@ public class JobApplication {
     @Column(name = "application_id")
     private Long applicationId;
 
-    @Column(name = "user_id")
-    private Long userId;
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @Column(name = "job_id")
     private Long jobId;
@@ -24,12 +25,19 @@ public class JobApplication {
     @Column(name = "date_applied")
     private LocalDate dateApplied;
 
+    @OneToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "job_id", nullable = false, unique = true)
+    private JobEntry jobEntry;
+
+    @OneToOne(mappedBy = "application", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private ApplicationNote note;
+
 
     public Long getApplicationId() { return applicationId; }
     public void setApplicationId(Long applicationId) { this.applicationId = applicationId; }
 
-    public Long getUserId() { return userId; }
-    public void setUserId(Long userId) { this.userId = userId; }
+    public Long getUserId() { return user.getUserId(); }
+    public void setUserId(Long userId) { this.user.setUserId(user.getUserId()); }
 
     public Long getJobId() { return jobId; }
     public void setJobId(Long jobId) { this.jobId = jobId; }

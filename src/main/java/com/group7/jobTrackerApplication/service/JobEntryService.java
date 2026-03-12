@@ -22,13 +22,14 @@ public class JobEntryService {
         this.userService = userService;
     }
 
-    public List<JobEntry> getAll() {
-        return jobEntryRepository.findAll();
+    public List<JobEntry> getAll( User user ) {
+        return jobEntryRepository.findByUserId(user.getUserId());
     }
 
-    public JobEntry getById(Long jobId) {
-        return jobEntryRepository.findById(jobId)
-                .orElseThrow(() -> new ResourceNotFoundException("Job entry not found with id: " + jobId));
+    public JobEntry getById(Long jobId, User user) {
+        return jobEntryRepository
+                .findByJobIdAndUserId(jobId, user.getUserId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Job entry not found"));
     }
 
     public JobEntry create(OAuth2User principal, CreateJobEntryRequest request) {
@@ -44,42 +45,35 @@ public class JobEntryService {
         return jobEntryRepository.save(je);
     }
 
-    public JobEntry replace(Long jobId, OAuth2User principal, JobEntry jobEntry) {
-        JobEntry existing = getById(jobId);
-        User user = userService.getOrCreateFromOAuth(principal);
+    public JobEntry replace(Long jobId, JobEntry changeTo, User user) {
+        JobEntry toChange = jobEntryRepository
+                        .findByJobIdAndUserId(jobId, user.getUserId())
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Job entry not found"));
 
-        if (!existing.getUserId().equals(user.getUserId())) {
-            throw new ForbiddenException("You do not have permission to update this job entry");
-        }
+        toChange.setCompanyName(changeTo.getCompanyName());
+        toChange.setJobTitle(changeTo.getJobTitle());
+        toChange.setPostingURL(changeTo.getPostingURL());
+        toChange.setSalaryText(changeTo.getSalaryText());
 
-        jobEntry.setJobId(jobId);
-        return jobEntryRepository.save(jobEntry);
+        return jobEntryRepository.save(toChange);
     }
 
-    public JobEntry patch(Long jobId, OAuth2User principal, UpdateJobEntryRequest updates) {
-        JobEntry existing = getById(jobId);
-        User user = userService.getOrCreateFromOAuth(principal);
+    public JobEntry patch(Long jobId, UpdateJobEntryRequest updates, User user) {
+        JobEntry toChange = jobEntryRepository.findByJobIdAndUserId(jobId, user.getUserId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Job entry not found"));
 
-        if (!existing.getUserId().equals(user.getUserId())) {
-            throw new ForbiddenException("You do not have permission to update this job entry");
-        }
+        if (updates.getCompany() != null) toChange.setCompanyName(updates.getCompany());
+        if (updates.getJobName() != null) toChange.setJobTitle(updates.getJobName());
+        if (updates.getSalary() != null) toChange.setSalaryText(updates.getSalary());
+        if (updates.getPostingUrl() != null) toChange.setPostingURL(updates.getPostingUrl());
 
-        if (updates.getCompany() != null) existing.setCompanyName(updates.getCompany());
-        if (updates.getJobName() != null) existing.setJobTitle(updates.getJobName());
-        if (updates.getSalary() != null) existing.setSalaryText(updates.getSalary());
-        if (updates.getPostingUrl() != null) existing.setPostingURL(updates.getPostingUrl());
-
-        return jobEntryRepository.save(existing);
+        return jobEntryRepository.save(toChange);
     }
 
-    public void delete(Long jobId, OAuth2User principal) {
-        JobEntry existing = getById(jobId);
-        User user = userService.getOrCreateFromOAuth(principal);
+    public void delete(Long jobId, User user) {
+        JobEntry toDelete = jobEntryRepository.findByJobIdAndUserId(jobId, user.getUserId())
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Job entry not found"));
 
-        if (!existing.getUserId().equals(user.getUserId())) {
-            throw new ForbiddenException("You do not have permission to delete this job entry");
-        }
-
-        jobEntryRepository.deleteById(jobId);
+        jobEntryRepository.deleteById(toDelete.getJobId());
     }
 }
