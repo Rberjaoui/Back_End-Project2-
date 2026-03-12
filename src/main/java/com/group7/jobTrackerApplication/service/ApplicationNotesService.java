@@ -47,10 +47,10 @@ public class ApplicationNotesService {
         return applicationNoteRepository.save(toChange);
     }
 
-    public ApplicationNote delete(Long noteId, Long applicationId,  User user) {
+    public void delete(Long noteId, Long applicationId,  User user) {
         ApplicationNote toDelete = applicationNoteRepository.findByNotesIdAndApplication_ApplicationIdAndApplication_User_UserId(noteId, applicationId, user.getUserId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Job application not found"));
 
-        return applicationNoteRepository.deleteById(toDelete.getNotesId());;
+        applicationNoteRepository.deleteById(toDelete.getNotesId());
     }
 }

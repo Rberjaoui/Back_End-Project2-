@@ -36,14 +36,14 @@ public class ApplicationNoteController {
     }
 
     @PatchMapping("/{noteId}")
-    ResponseEntity<ApplicationNote> patch(@PathVariable Long noteId, @Valid @RequestBody UpdateApplicationNoteRequest request, @AuthenticationPrincipal OAuth2User principal){
+    public ResponseEntity<ApplicationNote> patch(@PathVariable Long noteId, @Valid @RequestBody UpdateApplicationNoteRequest request, @AuthenticationPrincipal OAuth2User principal){
         ApplicationNote updated = applicationNotesService.patch(noteId, request , userService.getOrCreateFromOAuth(principal));
         return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{noteId}")
-    ResponseEntity<ApplicationNote> delete(@PathVariable Long noteId, @PathVariable Long applicationId,  @AuthenticationPrincipal OAuth2User principal){
-        ApplicationNote deleted = applicationNotesService.delete(noteId, applicationId,  userService.getOrCreateFromOAuth(principal));
+    public ResponseEntity<ApplicationNote> delete(@PathVariable Long noteId, @PathVariable Long applicationId,  @AuthenticationPrincipal OAuth2User principal){
+        applicationNotesService.delete(noteId, applicationId,  userService.getOrCreateFromOAuth(principal));
         return ResponseEntity.noContent().build();
     }
 
