@@ -8,11 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
-import java.util.Map;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/job-entries")
@@ -20,7 +17,7 @@ public class JobEntryController {
 
     private final JobEntryService jobEntryService;
 
-    public JobEntryController( JobEntryService jobEntryService){
+    public JobEntryController(JobEntryService jobEntryService){
         this.jobEntryService = jobEntryService;
     }
 
@@ -46,22 +43,20 @@ public class JobEntryController {
     }
 
     @PutMapping("/{jobId}")
-    public ResponseEntity<JobEntry> replace(@PathVariable Long jobId, @RequestBody JobEntry jobEntry ){
-        JobEntry updated = jobEntryService.replace(jobId, jobEntry);
+    public ResponseEntity<JobEntry> replace(@AuthenticationPrincipal OAuth2User principal, @PathVariable Long jobId, @RequestBody JobEntry jobEntry){
+        JobEntry updated = jobEntryService.replace(jobId, principal, jobEntry);
         return ResponseEntity.ok(updated);
     }
 
     @PatchMapping("/{jobId}")
-    public ResponseEntity<JobEntry> patch(@PathVariable Long jobId, @RequestBody UpdateJobEntryRequest updates){
-        JobEntry patched = jobEntryService.patch(jobId, updates);
+    public ResponseEntity<JobEntry> patch(@AuthenticationPrincipal OAuth2User principal, @PathVariable Long jobId, @RequestBody UpdateJobEntryRequest updates){
+        JobEntry patched = jobEntryService.patch(jobId, principal, updates);
         return ResponseEntity.ok(patched);
     }
 
     @DeleteMapping("/{jobId}")
-    public ResponseEntity<JobEntry> delete(@PathVariable Long jobId){
-        jobEntryService.delete(jobId);
+    public ResponseEntity<Void> delete(@AuthenticationPrincipal OAuth2User principal, @PathVariable Long jobId){
+        jobEntryService.delete(jobId, principal);
         return ResponseEntity.noContent().build();
     }
-
-
 }
