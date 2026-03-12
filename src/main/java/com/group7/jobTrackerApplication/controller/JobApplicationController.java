@@ -4,6 +4,8 @@ import com.group7.jobTrackerApplication.model.JobApplication;
 import com.group7.jobTrackerApplication.service.JobApplicationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +16,7 @@ public class JobApplicationController {
 
     private final JobApplicationService jobApplicationService;
 
-    public JobApplicationController( JobApplicationService jobApplicationService){
+    public JobApplicationController(JobApplicationService jobApplicationService){
         this.jobApplicationService = jobApplicationService;
     }
 
@@ -29,28 +31,26 @@ public class JobApplicationController {
     }
 
     @PostMapping
-    public ResponseEntity<JobApplication> create(@RequestBody JobApplication jobApplication){
-        JobApplication created = jobApplicationService.create(jobApplication);
+    public ResponseEntity<JobApplication> create(@AuthenticationPrincipal OAuth2User principal, @RequestBody JobApplication jobApplication){
+        JobApplication created = jobApplicationService.create(principal, jobApplication);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @PutMapping("/{applicationId}")
-    public ResponseEntity<JobApplication> replace(@PathVariable Long applicationId, @RequestBody JobApplication jobApplication ){
-        JobApplication updated = jobApplicationService.replace(applicationId, jobApplication);
+    public ResponseEntity<JobApplication> replace(@AuthenticationPrincipal OAuth2User principal, @PathVariable Long applicationId, @RequestBody JobApplication jobApplication){
+        JobApplication updated = jobApplicationService.replace(applicationId, principal, jobApplication);
         return ResponseEntity.ok(updated);
     }
 
     @PatchMapping("/{applicationId}")
-    public ResponseEntity<JobApplication> patch(@PathVariable Long applicationId, @RequestBody Map<String, Object> updates){
-        JobApplication patched = jobApplicationService.replace(applicationId, updates);
+    public ResponseEntity<JobApplication> patch(@AuthenticationPrincipal OAuth2User principal, @PathVariable Long applicationId, @RequestBody Map<String, Object> updates){
+        JobApplication patched = jobApplicationService.replace(applicationId, principal, updates);
         return ResponseEntity.ok(patched);
     }
 
     @DeleteMapping("/{applicationId}")
-    public ResponseEntity<JobApplication> delete(@PathVariable Long applicationId){
-        jobApplicationService.delete(applicationId);
+    public ResponseEntity<Void> delete(@AuthenticationPrincipal OAuth2User principal, @PathVariable Long applicationId){
+        jobApplicationService.delete(applicationId, principal);
         return ResponseEntity.noContent().build();
     }
-
-
 }

@@ -6,6 +6,8 @@ import com.group7.jobTrackerApplication.DTO.UpdateApplicationNoteRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -24,21 +26,20 @@ public class ApplicationNoteController {
     }
 
     @PostMapping
-    public ResponseEntity<ApplicationNote> create(@RequestBody ApplicationNote applicationNotes){
-        ApplicationNote created = applicationNotesService.create(applicationNotes);
+    public ResponseEntity<ApplicationNote> create(@AuthenticationPrincipal OAuth2User principal, @RequestBody ApplicationNote applicationNotes){
+        ApplicationNote created = applicationNotesService.create(principal, applicationNotes);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @PatchMapping("/{noteId}")
-    ResponseEntity<ApplicationNote> patch(@PathVariable Long noteId, @Valid @RequestBody UpdateApplicationNoteRequest request){
-        ApplicationNote updated = applicationNotesService.patch(noteId, request.getContent());
+    public ResponseEntity<ApplicationNote> patch(@AuthenticationPrincipal OAuth2User principal, @PathVariable Long noteId, @Valid @RequestBody UpdateApplicationNoteRequest request){
+        ApplicationNote updated = applicationNotesService.patch(noteId, principal, request.getContent());
         return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{noteId}")
-    ResponseEntity<ApplicationNote> delete(@PathVariable Long noteId){
-        ApplicationNote deleted = applicationNotesService.delete(noteId);
+    public ResponseEntity<Void> delete(@AuthenticationPrincipal OAuth2User principal, @PathVariable Long noteId){
+        applicationNotesService.delete(noteId, principal);
         return ResponseEntity.noContent().build();
     }
-
 }
