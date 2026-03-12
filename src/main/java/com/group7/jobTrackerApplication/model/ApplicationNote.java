@@ -29,6 +29,9 @@ public class ApplicationNote {
     public Long getApplicationId() { return application.getApplicationId(); }
     public void setApplicationId(Long applicationId) { this.application.setApplicationId(application.getApplicationId()); }
 
+    public Long getUserId() { return userId; }
+    public void setUserId(Long userId) { this.userId = userId; }
+
     public String getContent() { return content; }
     public void setContent(String content) { this.content = content; }
 

@@ -58,6 +58,4 @@ public class JobApplicationController {
         jobApplicationService.delete(applicationId, userService.getOrCreateFromOAuth(principal));
         return ResponseEntity.noContent().build();
     }
-
-
 }

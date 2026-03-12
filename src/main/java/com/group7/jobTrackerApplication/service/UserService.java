@@ -3,6 +3,8 @@ package com.group7.jobTrackerApplication.service;
 import com.group7.jobTrackerApplication.model.User;
 import com.group7.jobTrackerApplication.model.Role;
 import com.group7.jobTrackerApplication.repository.UserRepository;
+import com.group7.jobTrackerApplication.exception.ResourceNotFoundException;
+import com.group7.jobTrackerApplication.exception.NotAuthorizedException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -23,7 +25,7 @@ public class UserService {
 
     public User getUserById(Long userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
     }
 
     public User update(Long userId, Role newRole) {
@@ -39,7 +41,15 @@ public class UserService {
     }
 
     public User getOrCreateFromOAuth(OAuth2User principal) {
+        if (principal == null) {
+            throw new NotAuthorizedException("Authentication required");
+        }
+
         Map<String, Object> attrs = principal.getAttributes();
+
+        if (attrs.get("id") == null) {
+            throw new NotAuthorizedException("Token expired or invalid");
+        }
 
         String provider = "github";
         String subject = attrs.get("id").toString();

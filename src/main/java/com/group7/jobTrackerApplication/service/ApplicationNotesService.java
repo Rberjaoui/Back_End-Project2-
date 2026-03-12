@@ -11,14 +11,22 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import com.group7.jobTrackerApplication.model.User;
+import com.group7.jobTrackerApplication.repository.ApplicationNoteRepository;
+import com.group7.jobTrackerApplication.exception.ResourceNotFoundException;
+import com.group7.jobTrackerApplication.exception.ForbiddenException;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ApplicationNotesService {
 
     private final ApplicationNoteRepository applicationNoteRepository;
+    private final UserService userService;
 
-    public ApplicationNotesService(ApplicationNoteRepository applicationNoteRepository) {
+    public ApplicationNotesService(ApplicationNoteRepository applicationNoteRepository, UserService userService) {
         this.applicationNoteRepository = applicationNoteRepository;
+        this.userService = userService;
     }
 
     public ApplicationNote getNoteById(Long noteId, Long applicationId, User user) {

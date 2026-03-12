@@ -7,6 +7,9 @@ import com.group7.jobTrackerApplication.model.User;
 import com.group7.jobTrackerApplication.repository.JobApplicationRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
+import com.group7.jobTrackerApplication.exception.ResourceNotFoundException;
+import com.group7.jobTrackerApplication.exception.ForbiddenException;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -18,9 +21,11 @@ import java.time.LocalDate;
 public class JobApplicationService {
 
     private final JobApplicationRepository jobApplicationRepository;
+    private final UserService userService;
 
-    public JobApplicationService(JobApplicationRepository jobApplicationRepository) {
+    public JobApplicationService(JobApplicationRepository jobApplicationRepository, UserService userService) {
         this.jobApplicationRepository = jobApplicationRepository;
+        this.userService = userService;
     }
 
     public List<JobApplication> getAll( User user) {

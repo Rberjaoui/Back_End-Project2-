@@ -46,5 +46,4 @@ public class ApplicationNoteController {
         applicationNotesService.delete(noteId, applicationId,  userService.getOrCreateFromOAuth(principal));
         return ResponseEntity.noContent().build();
     }
-
 }
