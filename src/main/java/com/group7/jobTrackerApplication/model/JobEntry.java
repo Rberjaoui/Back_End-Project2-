@@ -11,8 +11,9 @@ public class JobEntry {
     @Column(name = "job_id")
     private Long jobId;
 
-    @Column(name = "user_id")
-    private Long userId;
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @Column(name = "company")
     private String companyName;
@@ -26,12 +27,15 @@ public class JobEntry {
     @Column(name = "posting_url")
     private String postingURL;
 
+    @OneToOne(mappedBy = "jobEntry", fetch= FetchType.LAZY)
+    private JobApplication jobApplication;
+
 
     public Long getJobId() { return jobId; }
     public void setJobId(Long jobId) { this.jobId = jobId; }
 
-    public Long getUserId() { return userId; }
-    public void setUserId( Long userId) {this.userId = userId;}
+    public Long getUserId() { return user.getUserId(); }
+    public void setUserId( Long userId) {this.user.setUserId(user.getUserId());}
 
     public String getCompanyName() { return companyName; }
     public void setCompanyName(String companyName) { this.companyName = companyName; }

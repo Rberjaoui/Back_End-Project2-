@@ -21,6 +21,10 @@ public class ApplicationNote {
     @Column(name = "last_edited")
     private LocalDateTime lastEdited;
 
+    @OneToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "application_id", nullable = false, unique = true)
+    private JobApplication jobApplication;
+
 
     public Long getNotesId() { return notesId; }
     public void setNotesId(Long notesId) { this.notesId = notesId; }

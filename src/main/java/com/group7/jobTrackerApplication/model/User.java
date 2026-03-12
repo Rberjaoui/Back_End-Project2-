@@ -3,6 +3,9 @@ package com.group7.jobTrackerApplication.model;
 import jakarta.persistence.*;
 import com.group7.jobTrackerApplication.model.Role;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "users")
 public class User {
@@ -27,6 +30,12 @@ public class User {
 
     @Column(name = "oauth_subject", nullable = false, unique = true)
     private String oauthSubject;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<JobEntry> jobEntries = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<JobApplication> jobApplications = new ArrayList<>();
 
     public User() {}
 
