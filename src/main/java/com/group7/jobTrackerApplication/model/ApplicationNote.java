@@ -12,9 +12,6 @@ public class ApplicationNote {
     @Column(name = "notes_id")
     private Long notesId;
 
-    @Column(name = "application_id")
-    private Long applicationId;
-
     @Column(name = "content")
     private String content;
 
@@ -23,14 +20,14 @@ public class ApplicationNote {
 
     @OneToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "application_id", nullable = false, unique = true)
-    private JobApplication jobApplication;
+    private JobApplication application;
 
 
     public Long getNotesId() { return notesId; }
     public void setNotesId(Long notesId) { this.notesId = notesId; }
 
-    public Long getApplicationId() { return applicationId; }
-    public void setApplicationId(Long applicationId) { this.applicationId = applicationId; }
+    public Long getApplicationId() { return application.getApplicationId(); }
+    public void setApplicationId(Long applicationId) { this.application.setApplicationId(application.getApplicationId()); }
 
     public String getContent() { return content; }
     public void setContent(String content) { this.content = content; }

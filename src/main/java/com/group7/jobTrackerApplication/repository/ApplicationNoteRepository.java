@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface ApplicationNoteRepository extends JpaRepository<ApplicationNote, Long>{
 
-    Optional<List<ApplicationNote>> findByApplicationId(Long applicationId);
+    Optional<List<ApplicationNote>> findByApplication_ApplicationId(Long applicationId);
 
     Optional<ApplicationNote> findByNotesIdAndApplication_ApplicationIdAndApplication_User_UserId(Long notesId, Long applicationId, Long userId);
 }
