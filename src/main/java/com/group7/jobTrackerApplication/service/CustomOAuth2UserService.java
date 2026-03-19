@@ -30,6 +30,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     public OAuth2User loadUser(OAuth2UserRequest request) throws OAuth2AuthenticationException {
         OAuth2User oauthUser = super.loadUser(request);
 
+
+
         String login = (String) oauthUser.getAttribute("login");
         if(login == null){
             throw new OAuth2AuthenticationException("Missing GitHub login attribute");

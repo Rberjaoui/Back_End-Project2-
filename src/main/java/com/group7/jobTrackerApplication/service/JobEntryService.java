@@ -24,13 +24,13 @@ public class JobEntryService {
     }
 
     public List<JobEntry> getAll( User user ) {
-        return jobEntryRepository.findByUserId(user.getUserId())
+        return jobEntryRepository.findByUser_UserId(user.getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("Job entries not found"));
     }
 
     public JobEntry getById(Long jobId, User user) {
         return jobEntryRepository
-                .findByJobIdAndUserId(jobId, user.getUserId())
+                .findByJobIdAndUser_UserId(jobId, user.getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("Job entry not found"));
     }
 
@@ -49,7 +49,7 @@ public class JobEntryService {
 
     public JobEntry replace(Long jobId, UpdateJobEntryRequest request, User user) {
         JobEntry toChange = jobEntryRepository
-                        .findByJobIdAndUserId(jobId, user.getUserId())
+                        .findByJobIdAndUser_UserId(jobId, user.getUserId())
                         .orElseThrow(() -> new ForbiddenException("Not authorized to update this job entry"));
 
         toChange.setCompanyName(request.company());
@@ -61,7 +61,7 @@ public class JobEntryService {
     }
 
     public JobEntry patch(Long jobId, UpdateJobEntryRequest request, User user) {
-        JobEntry toChange = jobEntryRepository.findByJobIdAndUserId(jobId, user.getUserId())
+        JobEntry toChange = jobEntryRepository.findByJobIdAndUser_UserId(jobId, user.getUserId())
                 .orElseThrow(() -> new ForbiddenException("Not authorized to update this job entry"));
 
         if (request.company() != null) toChange.setCompanyName(request.company());
@@ -73,7 +73,7 @@ public class JobEntryService {
     }
 
     public void delete(Long jobId, User user) {
-        JobEntry toDelete = jobEntryRepository.findByJobIdAndUserId(jobId, user.getUserId())
+        JobEntry toDelete = jobEntryRepository.findByJobIdAndUser_UserId(jobId, user.getUserId())
                         .orElseThrow(() -> new ForbiddenException("Not authorized to delete this job entry"));
 
         jobEntryRepository.deleteById(toDelete.getJobId());

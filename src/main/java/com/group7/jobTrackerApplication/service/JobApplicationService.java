@@ -30,7 +30,7 @@ public class JobApplicationService {
     }
 
     public List<GetJobApplicationRequest> getAll(User user) {
-        List<JobApplication> applications = jobApplicationRepository.findALlByUser_UserId(user.getUserId())
+        List<JobApplication> applications = jobApplicationRepository.findAllByUser_UserId(user.getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException(("Job applications not found")));
 
         return applications.stream()
@@ -42,7 +42,7 @@ public class JobApplicationService {
     }
 
     public JobApplication getById(Long applicationId, User user) {
-        return jobApplicationRepository.findByApplicationIdAndUserId(applicationId, user.getUserId())
+        return jobApplicationRepository.findByApplicationIdAndUser_UserId(applicationId, user.getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("Job application not found"));
     }
 
@@ -58,29 +58,29 @@ public class JobApplicationService {
     }
 
     public JobApplication replace(Long applicationId, UpdateJobApplicationRequest jobApplication, User user) {
-        JobApplication toChange = jobApplicationRepository.findByApplicationIdAndUserId(applicationId, user.getUserId())
+        JobApplication toChange = jobApplicationRepository.findByApplicationIdAndUser_UserId(applicationId, user.getUserId())
                 .orElseThrow(()-> new ForbiddenException("Not authorized to update requested job application."));
 
         toChange.setDateApplied(jobApplication.dataApplied());
         toChange.setStatus(jobApplication.status());
-        toChange.setJobId(jobApplication.jobId());
+        toChange.getJobEntry().setJobId(jobApplication.jobId());
 
         return jobApplicationRepository.save(toChange);
     }
 
     public JobApplication patch(Long applicationId, UpdateJobApplicationRequest request, User user) {
-        JobApplication toChange = jobApplicationRepository.findByApplicationIdAndUserId(applicationId, user.getUserId())
+        JobApplication toChange = jobApplicationRepository.findByApplicationIdAndUser_UserId(applicationId, user.getUserId())
                 .orElseThrow(()-> new ForbiddenException("Not authorized to update requested job application."));
 
         if(request.dataApplied() != null) toChange.setDateApplied(request.dataApplied());
         if(request.status() != null) toChange.setStatus(request.status());
-        if(request.jobId() != null) toChange.setJobId(request.jobId());
+        if(request.jobId() != null) toChange.getJobEntry().setJobId(request.jobId());
 
         return jobApplicationRepository.save(toChange);
     }
 
     public void delete(Long applicationId, User user) {
-        JobApplication toDelete = jobApplicationRepository.findByApplicationIdAndUserId(applicationId, user.getUserId())
+        JobApplication toDelete = jobApplicationRepository.findByApplicationIdAndUser_UserId(applicationId, user.getUserId())
                         .orElseThrow(() -> new ForbiddenException("Not authorized to delete requested job application."));
 
         jobApplicationRepository.deleteById(toDelete.getApplicationId());
