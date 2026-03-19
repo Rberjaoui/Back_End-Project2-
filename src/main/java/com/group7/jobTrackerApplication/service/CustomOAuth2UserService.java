@@ -30,19 +30,25 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     public OAuth2User loadUser(OAuth2UserRequest request) throws OAuth2AuthenticationException {
         OAuth2User oauthUser = super.loadUser(request);
 
-
-
         String login = (String) oauthUser.getAttribute("login");
         if(login == null){
             throw new OAuth2AuthenticationException("Missing GitHub login attribute");
         }
 
-        User user = userRepository.findByUsername(login)
+        // Use GitHub ID as the OAuth subject for uniqueness
+        Integer githubId = (Integer) oauthUser.getAttribute("id");
+        if(githubId == null){
+            throw new OAuth2AuthenticationException("Missing GitHub id attribute");
+        }
+        String oauthSubject = githubId.toString();
+
+        User user = userRepository.findByOauthProviderAndOauthSubject("github", oauthSubject)
                 .orElseGet(() -> {
                     User u = new User();
                     u.setUsername(login);
                     u.setEmail((String) oauthUser.getAttribute("email"));
-                    u.setOauthProvider("gitHub");
+                    u.setOauthProvider("github");
+                    u.setOauthSubject(oauthSubject);
                     u.setRole(Role.USER);
                     return userRepository.save(u);
                 });
