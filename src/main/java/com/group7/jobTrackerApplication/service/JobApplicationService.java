@@ -4,8 +4,10 @@ import com.group7.jobTrackerApplication.DTO.CreateJobApplicationRequest;
 import com.group7.jobTrackerApplication.DTO.GetJobApplicationRequest;
 import com.group7.jobTrackerApplication.DTO.UpdateJobApplicationRequest;
 import com.group7.jobTrackerApplication.model.JobApplication;
+import com.group7.jobTrackerApplication.model.JobEntry;
 import com.group7.jobTrackerApplication.model.User;
 import com.group7.jobTrackerApplication.repository.JobApplicationRepository;
+import com.group7.jobTrackerApplication.repository.JobEntryRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import com.group7.jobTrackerApplication.exception.ResourceNotFoundException;
@@ -22,11 +24,11 @@ import java.time.LocalDate;
 public class JobApplicationService {
 
     private final JobApplicationRepository jobApplicationRepository;
-    private final UserService userService;
+    private final JobEntryRepository jobEntryRepository;
 
-    public JobApplicationService(JobApplicationRepository jobApplicationRepository, UserService userService) {
+    public JobApplicationService(JobApplicationRepository jobApplicationRepository, JobEntryRepository jobEntryRepository) {
         this.jobApplicationRepository = jobApplicationRepository;
-        this.userService = userService;
+        this.jobEntryRepository = jobEntryRepository;
     }
 
     public List<GetJobApplicationRequest> getAll(User user) {
@@ -37,22 +39,33 @@ public class JobApplicationService {
                 .map( app -> new GetJobApplicationRequest(
                         app.getApplicationId(),
                         app.getJobEntry().getJobId(),
-                        app.getJobEntry().getJobTitle()
+                        app.getJobEntry().getJobTitle(),
+                        app.getStatus(),
+                        app.getDateApplied()
                 )).toList();
     }
 
-    public JobApplication getById(Long applicationId, User user) {
-        return jobApplicationRepository.findByApplicationIdAndUser_UserId(applicationId, user.getUserId())
+    public GetJobApplicationRequest getById(Long applicationId, User user) {
+        JobApplication application = jobApplicationRepository.findByApplicationIdAndUser_UserId(applicationId, user.getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("Job application not found"));
+
+        return new GetJobApplicationRequest(
+                application.getApplicationId(),
+                application.getJobEntry().getJobId(),
+                application.getJobEntry().getJobTitle(),
+                application.getStatus(),
+                application.getDateApplied()
+        ) ;
     }
 
     public JobApplication create(CreateJobApplicationRequest jobApplication, User user) {
+        JobEntry jobEntry = getOwnedJobEntry(jobApplication.jobId(), user);
 
         JobApplication jp = new JobApplication();
         jp.setDateApplied(jobApplication.dateApplied());
         jp.setStatus(jobApplication.status());
-        jp.getUser().setUserId(user.getUserId());
-        jp.getJobEntry().setJobId(jobApplication.jobId());
+        jp.setUser(user);
+        jp.setJobEntry(jobEntry);
 
         return jobApplicationRepository.save(jp);
     }
@@ -61,9 +74,9 @@ public class JobApplicationService {
         JobApplication toChange = jobApplicationRepository.findByApplicationIdAndUser_UserId(applicationId, user.getUserId())
                 .orElseThrow(()-> new ForbiddenException("Not authorized to update requested job application."));
 
-        toChange.setDateApplied(jobApplication.dataApplied());
+        toChange.setDateApplied(jobApplication.dateApplied());
         toChange.setStatus(jobApplication.status());
-        toChange.getJobEntry().setJobId(jobApplication.jobId());
+        toChange.setJobEntry(getOwnedJobEntry(jobApplication.jobId(), user));
 
         return jobApplicationRepository.save(toChange);
     }
@@ -72,9 +85,9 @@ public class JobApplicationService {
         JobApplication toChange = jobApplicationRepository.findByApplicationIdAndUser_UserId(applicationId, user.getUserId())
                 .orElseThrow(()-> new ForbiddenException("Not authorized to update requested job application."));
 
-        if(request.dataApplied() != null) toChange.setDateApplied(request.dataApplied());
+        if(request.dateApplied() != null) toChange.setDateApplied(request.dateApplied());
         if(request.status() != null) toChange.setStatus(request.status());
-        if(request.jobId() != null) toChange.getJobEntry().setJobId(request.jobId());
+        if(request.jobId() != null) toChange.setJobEntry(getOwnedJobEntry(request.jobId(), user));
 
         return jobApplicationRepository.save(toChange);
     }
@@ -84,5 +97,10 @@ public class JobApplicationService {
                         .orElseThrow(() -> new ForbiddenException("Not authorized to delete requested job application."));
 
         jobApplicationRepository.deleteById(toDelete.getApplicationId());
+    }
+
+    private JobEntry getOwnedJobEntry(Long jobId, User user) {
+        return jobEntryRepository.findByJobIdAndUser_UserId(jobId, user.getUserId())
+                .orElseThrow(() -> new ResourceNotFoundException("Job entry not found"));
     }
 }
