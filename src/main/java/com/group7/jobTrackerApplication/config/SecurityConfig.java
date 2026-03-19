@@ -31,7 +31,7 @@ public class SecurityConfig {
                 // Required so React can call the API AND include cookies
                 .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration cfg = new CorsConfiguration();
-                    cfg.setAllowedOrigins(List.of(FRONTEND_ORIGIN));
+                    cfg.setAllowedOrigins(List.of("http://localhost:3000"));
                     cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                     cfg.setAllowedHeaders(List.of("*"));
                     cfg.setAllowCredentials(true);
