@@ -1,5 +1,6 @@
 package com.group7.jobTrackerApplication.service;
 
+import com.group7.jobTrackerApplication.DTO.ApplicationNoteRequest;
 import com.group7.jobTrackerApplication.DTO.CreateApplicationNoteRequest;
 import com.group7.jobTrackerApplication.DTO.UpdateApplicationNoteRequest;
 import com.group7.jobTrackerApplication.model.ApplicationNote;
@@ -9,6 +10,8 @@ import org.springframework.stereotype.Service;
 import com.group7.jobTrackerApplication.exception.ResourceNotFoundException;
 import com.group7.jobTrackerApplication.exception.ForbiddenException;
 
+import java.util.List;
+
 @Service
 public class ApplicationNotesService {
 
@@ -16,6 +19,23 @@ public class ApplicationNotesService {
 
     public ApplicationNotesService(ApplicationNoteRepository applicationNoteRepository) {
         this.applicationNoteRepository = applicationNoteRepository;
+    }
+
+    public List<ApplicationNoteRequest> getAllNotes(User user) {
+
+        List<ApplicationNote> notes =
+                applicationNoteRepository.findByApplication_User_UserId(user.getUserId());
+
+        return notes.stream()
+                .map(note -> new ApplicationNoteRequest(
+                        note.getNotesId(),
+                        note.getApplication().getJobEntry().getJobTitle(),
+                        note.getApplication().getJobEntry().getCompanyName(),
+                        note.getApplication().getStatus().toString(),
+                        note.getContent(),
+                        note.getLastEdited()
+                ))
+                .toList();
     }
 
     public ApplicationNote getNoteById(Long noteId, Long applicationId, User user) {
