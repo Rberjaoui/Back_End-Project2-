@@ -29,6 +29,7 @@ public class ApplicationNotesService {
         return notes.stream()
                 .map(note -> new ApplicationNoteRequest(
                         note.getNotesId(),
+                        note.getApplication().getApplicationId(),
                         note.getApplication().getJobEntry().getJobTitle(),
                         note.getApplication().getJobEntry().getCompanyName(),
                         note.getApplication().getStatus().toString(),
@@ -43,7 +44,7 @@ public class ApplicationNotesService {
                 .orElseThrow(() -> new ResourceNotFoundException("Application Note not found"));
     }
 
-    public ApplicationNote create(CreateApplicationNoteRequest request, User user) {
+    public ApplicationNote create(CreateApplicationNoteRequest request, Long applicationId, User user) {
 
         ApplicationNote ap = new ApplicationNote();
         ap.setContent(request.content());
@@ -53,7 +54,7 @@ public class ApplicationNotesService {
         return applicationNoteRepository.save(ap);
     }
 
-    public ApplicationNote patch(Long notesId, UpdateApplicationNoteRequest request, User user) {
+    public ApplicationNote patch(Long applicationId, Long notesId, UpdateApplicationNoteRequest request, User user) {
 
         ApplicationNote toChange = applicationNoteRepository.findByNotesIdAndApplication_ApplicationIdAndApplication_User_UserId(notesId, request.application().getApplicationId(), user.getUserId())
                 .orElseThrow(()-> new ForbiddenException("Not authorized to update this note"));
