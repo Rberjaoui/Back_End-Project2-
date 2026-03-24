@@ -29,7 +29,6 @@ public class ApplicationNotesService {
         return notes.stream()
                 .map(note -> new ApplicationNoteRequest(
                         note.getNotesId(),
-                        note.getApplication().getApplicationId(),
                         note.getApplication().getJobEntry().getJobTitle(),
                         note.getApplication().getJobEntry().getCompanyName(),
                         note.getApplication().getStatus().toString(),
