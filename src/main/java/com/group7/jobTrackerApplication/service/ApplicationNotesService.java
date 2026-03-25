@@ -1,5 +1,6 @@
 package com.group7.jobTrackerApplication.service;
 
+import com.group7.jobTrackerApplication.DTO.ApplicationNoteRequest;
 import com.group7.jobTrackerApplication.DTO.CreateApplicationNoteRequest;
 import com.group7.jobTrackerApplication.DTO.GetApplicationNoteSummary;
 import com.group7.jobTrackerApplication.DTO.UpdateApplicationNoteRequest;
@@ -27,6 +28,23 @@ public class ApplicationNotesService {
     ) {
         this.applicationNoteRepository = applicationNoteRepository;
         this.jobApplicationRepository = jobApplicationRepository;
+    }
+
+    public List<ApplicationNoteRequest> getAllNotes(User user) {
+
+        List<ApplicationNote> notes =
+                applicationNoteRepository.findByApplication_User_UserId(user.getUserId());
+
+        return notes.stream()
+                .map(note -> new ApplicationNoteRequest(
+                        note.getNotesId(),
+                        note.getApplication().getJobEntry().getJobTitle(),
+                        note.getApplication().getJobEntry().getCompanyName(),
+                        note.getApplication().getStatus().toString(),
+                        note.getContent(),
+                        note.getLastEdited()
+                ))
+                .toList();
     }
 
     public ApplicationNote getNoteById(Long noteId, Long applicationId, User user) {
@@ -81,7 +99,7 @@ public class ApplicationNotesService {
         return applicationNoteRepository.save(ap);
     }
 
-    public ApplicationNote patch(Long notesId, UpdateApplicationNoteRequest request, User user) {
+    public ApplicationNote patch(Long applicationId, Long notesId, UpdateApplicationNoteRequest request, User user) {
 
         ApplicationNote toChange = applicationNoteRepository.findByNotesIdAndApplication_ApplicationIdAndApplication_User_UserId(notesId, request.application().getApplicationId(), user.getUserId())
                 .orElseThrow(()-> new ForbiddenException("Not authorized to update this note"));

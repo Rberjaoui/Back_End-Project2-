@@ -1,6 +1,8 @@
 package com.group7.jobTrackerApplication.controller;
 
 import com.group7.jobTrackerApplication.DTO.GetApplicationNoteSummary;
+
+import com.group7.jobTrackerApplication.DTO.ApplicationNoteRequest;
 import com.group7.jobTrackerApplication.service.ApplicationNotesService;
 import com.group7.jobTrackerApplication.service.UserService;
 import org.springframework.http.ResponseEntity;
@@ -35,3 +37,14 @@ public class ApplicationNotesOverviewController {
     }
 }
 
+    @GetMapping("/notes")
+    public ResponseEntity<List<ApplicationNoteRequest>> getAllNotes(
+            @AuthenticationPrincipal OAuth2User principal) {
+
+        return ResponseEntity.ok(
+                applicationNotesService.getAllNotes(
+                        userService.getOrCreateFromOAuth(principal)
+                )
+        );
+    }
+}
