@@ -33,6 +33,12 @@ public class AuthController {
      * @param userService service used to resolve3 or create the current user record
      * @param jobApplicationRepository repository used to count current user applications
      */
+    /**
+     * Creates a new auth controller with the required collaborators.
+     *
+     * @param userService service used to resolve or create the current user record
+     * @param jobApplicationRepository repository used to count current user applications
+     */
     public AuthController(UserService userService, JobApplicationRepository jobApplicationRepository) {
         this.userService = userService;
         this.jobApplicationRepository = jobApplicationRepository;
@@ -49,6 +55,7 @@ public class AuthController {
         long applicationCount = jobApplicationRepository.countByUser_UserId(dbUser.getUserId());
 
         return Map.of(
+                "userId", dbUser.getUserId(),
                 "username", dbUser.getUsername(),
                 "name", user.getAttribute("name"),
                 "login", user.getAttribute("login"),
