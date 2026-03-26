@@ -30,7 +30,7 @@ public class AuthController {
     /**
      * Creates a new auth controller with the required collaborators.
      *
-     * @param userService service used to resolve or create the current user record
+     * @param userService service used to resolve3 or create the current user record
      * @param jobApplicationRepository repository used to count current user applications
      */
     public AuthController(UserService userService, JobApplicationRepository jobApplicationRepository) {
