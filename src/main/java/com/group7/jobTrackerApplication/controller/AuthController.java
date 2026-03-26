@@ -53,9 +53,13 @@ public class AuthController {
 
         return Map.of(
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
                 "userId", dbUser.getUserId(),
 >>>>>>> 081744b7c9ee1e873df3b2b14241d93faf15c39e
+=======
+                "userId", dbUser.getUserId(),
+>>>>>>> f968181bd24fe33c6b04182ca4c8dbb544e458bc
                 "username", dbUser.getUsername(),
                 "name", user.getAttribute("name"),
                 "login", user.getAttribute("login"),
