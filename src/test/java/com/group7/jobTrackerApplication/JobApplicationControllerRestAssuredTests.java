@@ -45,7 +45,7 @@ class JobApplicationControllerRestAssuredTests extends AbstractRestAssuredIntegr
     @Test
     void getAll_returnsApplications() {
         when(jobApplicationService.getAll(user)).thenReturn(List.of(
-                new GetJobApplicationRequest(1L, 10L, "SWE Intern", "APPLIED", LocalDate.of(2026, 3, 1), 5L)
+                new GetJobApplicationRequest(1L, 10L, "OpenAI", "SWE Intern", "APPLIED", LocalDate.of(2026, 3, 1), 5L)
         ));
 
         given()
