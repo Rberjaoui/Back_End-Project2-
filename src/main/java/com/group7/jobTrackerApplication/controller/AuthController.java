@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -47,21 +48,20 @@ public class AuthController {
     public Map<String, Object> me(@AuthenticationPrincipal OAuth2User user) {
         User dbUser = userService.getOrCreateFromOAuth(user);
         long applicationCount = jobApplicationRepository.countByUser_UserId(dbUser.getUserId());
-
-        return Map.of(
-                "username", dbUser.getUsername(),
-                "name", user.getAttribute("name"),
-                "login", user.getAttribute("login"),
-                "email", user.getAttribute("email"),
-                "oauthProvider", dbUser.getOauthProvider(),
-                "role", dbUser.getRole().name(),
-                "applicationCount", applicationCount,
-                "authorities", user.getAuthorities().stream()
-                        .map(grantedAuthority -> grantedAuthority.getAuthority())
-                        .sorted()
-                        .collect(Collectors.toList()),
-                "attributes", user.getAttributes()
-        );
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("username", dbUser.getUsername());
+        response.put("name", user.getAttribute("name"));
+        response.put("login", user.getAttribute("login"));
+        response.put("email", user.getAttribute("email"));
+        response.put("oauthProvider", dbUser.getOauthProvider());
+        response.put("role", dbUser.getRole().name());
+        response.put("applicationCount", applicationCount);
+        response.put("authorities", user.getAuthorities().stream()
+                .map(grantedAuthority -> grantedAuthority.getAuthority())
+                .sorted()
+                .collect(Collectors.toList()));
+        response.put("attributes", user.getAttributes());
+        return response;
     }
 
     @DeleteMapping("/api/me")
