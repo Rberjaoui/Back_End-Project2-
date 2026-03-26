@@ -30,6 +30,7 @@ public class AuthController {
         long applicationCount = jobApplicationRepository.countByUser_UserId(dbUser.getUserId());
 
         return Map.of(
+                "userId", dbUser.getUserId(),
                 "username", dbUser.getUsername(),
                 "name", user.getAttribute("name"),
                 "login", user.getAttribute("login"),
