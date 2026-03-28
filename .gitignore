@@ -319,6 +319,7 @@ web_modules/
 .env.test.local
 .env.production.local
 .env.local
+src/main/resources/application-local.properties
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache

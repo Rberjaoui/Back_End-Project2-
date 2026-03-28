@@ -1,0 +1,15 @@
+spring.datasource.url=jdbc:postgresql://localhost:5432/jobtracker
+spring.datasource.username=postgres
+spring.datasource.password=change_me
+
+spring.security.oauth2.client.registration.github.client-id=change_me
+spring.security.oauth2.client.registration.github.client-secret=change_me
+
+spring.security.oauth2.client.registration.google.client-id=change_me
+spring.security.oauth2.client.registration.google.client-secret=change_me
+spring.security.oauth2.client.registration.google.scope=openid,profile,email
+
+app.admin.github-login=your-github-username
+app.base-url=http://localhost:8080
+app.frontend.origin=http://localhost:3000
+app.frontend.success-url=http://localhost:3000/oauth-success
